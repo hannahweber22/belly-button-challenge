@@ -1,1 +1,6 @@
 # belly-button-challenge
+
+# I built an interactive dashboard that explores the Belly Button Biodiversity dataset which catalogs the microbes that colonize the human navels. The Belly Button Biodiversity dataset reveals a small handful of microbial species (also called operational taxonomic units, or OTUS) were present in more than 70% of people, while the rest were relatively rare.
+
+# First the samples.json data was read in using the D3 library from the URL https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json. The drop down menu displays the sample IDs. The bubble chart was created to display a selected sample IDs otu_ids for the x values, sample_values for the y values, sample_values for the marker size, otu_ids for the marker colors, otu_labels for the text values. The horizontal bar chart was created to displace a selected sample IDs top 10 OTUs using sample_values as the values for the bar chart, otu_ids as the labels for the bar chart, and otu_labels as the hovertext for the chart. The demographic info displays the key-value pairs from metadata. When the selected sample ID is changed, the bubble chart, horizontal bar chart , and the demographic information updates on change.
+
