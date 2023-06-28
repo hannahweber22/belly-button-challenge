@@ -10,22 +10,21 @@ d3.json(url).then(function(data) {
 d3.json(url).then(function(data) {
     //Create a variable to hold the data samples
     datasamples = data.samples;
+    metadata = data.metadata; 
+
+    console.log('metadata', metadata);
 
     //Create a variable to hold the ids
     sample_id = datasamples.map(sample => sample.id);
-    console.log('sample_id', sample_id);   
 
     //Create a variable to hold the sample_values arrays
     sample_values = datasamples.map(sample => sample.sample_values);
-    console.log('sample_values', sample_values);
 
     //Create a variable to hold the otu_ids arrays
     otu_ids = datasamples.map(sample => sample.otu_ids);
-    console.log('otu_ids', otu_ids);
     
     //Create a variable to hold the otu_labels arrays
     otu_labels = datasamples.map(sample => sample.otu_labels);
-    console.log('otu_labels', otu_labels);
 
     //Loop through the sample_id list and append values to the selDataset
     for (let i = 0; i < sample_id.length; i++) {
@@ -34,41 +33,96 @@ d3.json(url).then(function(data) {
     }
 
     // On change to the DOM, call getData()
-    d3.selectAll("#selDataset").on("change", horzbar);
-    horzbar();
+    d3.selectAll("#selDataset").on("change", mod14plots);
+    mod14plots();
 
     // This function is called when a dropdown menu item is selected
-    function horzbar() {
+    function mod14plots() {
         // Use D3 to select the dropdown menu
         let dropdownMenu = d3.select("#selDataset");
         // Assign the value of the dropdown menu option to a variable
         let dataset = dropdownMenu.property("value");
-        // Initialize x and y arrays
-        let sampleValues = [];
-        let otuIDs = [];
-        let otuLabels = [];
 
         // Create a custom filtering function to only select selected ID data
         function filterID(sampleID) {
-        return sampleID.id == dataset;
+        return (sampleID.id == dataset);
         };
 
-        // filter() uses the custom function as its argument
-        let selectedID = datasamples.filter(filterID);
-        console.log('selectedID', selectedID)
+        // filter() samples for selectedID and sort by descending
+        selectedID = datasamples.filter(filterID);
+
+        //filter() metadata for selectedID
+        selectedMeta = metadata.filter(filterID)[0];
 
         //Create a variable to hold the selected ID sample_values array
-        let selectedSampleValues = selectedID.map(sample => sample.sample_values);
-        console.log('Selected sample_values', selectedSampleValues);
-
+        selectedSampleValues = selectedID.map(sample => sample.sample_values);
 
         //Create a variable to hold the selected ID otu_ids array
-        let selectedOTUIDs = selectedID.map(sample => sample.otu_ids);
-        console.log('Selected otu_ids', selectedOTUIDs);
+        selectedOTUIDs = selectedID.map(sample => sample.otu_ids);
         
         //Create a variable to hold the selected ID otu_labels array
-        let selectedOTULabels = selectedID.map(sample => sample.otu_labels);
-        console.log('Selected otu_labels', selectedOTULabels);
+        selectedOTULabels = selectedID.map(sample => sample.otu_labels);
+
+        //Compile bubble chart data and plot
+        bubblechar();
+        function bubblechar() {
+        let bubbledata = [{
+            x: selectedOTUIDs[0],
+            y: selectedSampleValues[0],
+            mode: 'markers',
+            marker: {
+              color: selectedOTUIDs[0],
+              size: selectedSampleValues[0]*.2
+            },
+            text: selectedOTULabels[0],
+          }];
+
+          console.log('bubbledata', bubbledata);
+                   
+          Plotly.newPlot('bubble', bubbledata);
+
+        }; 
+
+        // Compile bar chart data and plot 
+        horzbar();
+        function horzbar() {
+
+        let slicedSampleValues = selectedSampleValues[0].slice(0,9).reverse();
+        let slicedOTUIDs = selectedOTUIDs[0].slice(0,9).reverse();
+        let slicedOTULabels = selectedOTULabels[0].slice(0,9).reverse();
+        
+        let OTUIDsarray = []
+        for (let i=0; i<slicedOTUIDs.length; i++){
+            OTUIDsarray.push(`OTU ${slicedOTUIDs[i].toString()}`);
+        }
+
+        horzdata = [{
+            type: 'bar',
+            x: slicedSampleValues,
+            y: OTUIDsarray,
+            text: slicedOTULabels,
+            orientation: 'h'
+        }];
+
+        console.log('horzdata', horzdata);
+
+        Plotly.newPlot("bar", horzdata);
+
+        };
+
+
+        //Display sample meta data 
+        let selectedMetaString = `id: ${selectedMeta.id}<br>
+        ethnicity: ${selectedMeta.ethnicity}<br>
+        gender: ${selectedMeta.gender}<br>
+        age: ${selectedMeta.age}<br>
+        location: ${selectedMeta.location}<br>
+        bbtype: ${selectedMeta.bbtype}<br>
+        wfreq: ${selectedMeta.wfreq}<br>`;
+        console.log('selectedMetaString', selectedMetaString);
+
+        let metatext = d3.select(".panel-body").html(selectedMetaString);
+        console.log(metatext);
 
     };
 }); 
@@ -77,3 +131,12 @@ d3.json(url).then(function(data) {
 // Use otu_ids as the labels for the bar chart.
 // Use otu_labels as the hovertext for the chart.
 
+//Create a bubble chart that displays each sample.
+//Use otu_ids for the x values.
+//Use sample_values for the y values.
+//Use sample_values for the marker size.
+//Use otu_ids for the marker colors.
+//Use otu_labels for the text values.
+
+//how to display metadata
+//size of bubbles needs fixed
