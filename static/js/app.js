@@ -12,8 +12,6 @@ d3.json(url).then(function(data) {
     datasamples = data.samples;
     metadata = data.metadata; 
 
-    console.log('metadata', metadata);
-
     //Create a variable to hold the ids
     sample_id = datasamples.map(sample => sample.id);
 
@@ -67,13 +65,18 @@ d3.json(url).then(function(data) {
         bubblechar();
         function bubblechar() {
         let bubbledata = [{
+            //Use otu_ids for the x values.
             x: selectedOTUIDs[0],
+            //Use sample_values for the y values.
             y: selectedSampleValues[0],
             mode: 'markers',
             marker: {
+            //Use otu_ids for the marker colors.
               color: selectedOTUIDs[0],
-              size: selectedSampleValues[0]*.2
+            //Use sample_values for the marker size.
+              size: selectedSampleValues[0]
             },
+            //Use otu_labels for the text values.
             text: selectedOTULabels[0],
           }];
 
@@ -87,10 +90,12 @@ d3.json(url).then(function(data) {
         horzbar();
         function horzbar() {
 
+        //Slice reverse the order of the selected sample ID and slice 10 of the IDs
         let slicedSampleValues = selectedSampleValues[0].slice(0,9).reverse();
         let slicedOTUIDs = selectedOTUIDs[0].slice(0,9).reverse();
         let slicedOTULabels = selectedOTULabels[0].slice(0,9).reverse();
         
+        //Put the OUT Ids into a string for labels
         let OTUIDsarray = []
         for (let i=0; i<slicedOTUIDs.length; i++){
             OTUIDsarray.push(`OTU ${slicedOTUIDs[i].toString()}`);
@@ -98,8 +103,11 @@ d3.json(url).then(function(data) {
 
         horzdata = [{
             type: 'bar',
+        // Use sample_values as the values for the bar chart.
             x: slicedSampleValues,
+        // Use otu_ids as the labels for the bar chart.
             y: OTUIDsarray,
+        // Use otu_labels as the hovertext for the chart.
             text: slicedOTULabels,
             orientation: 'h'
         }];
@@ -111,7 +119,7 @@ d3.json(url).then(function(data) {
         };
 
 
-        //Display sample meta data 
+        //Display sample meta data using template literals
         let selectedMetaString = `id: ${selectedMeta.id}<br>
         ethnicity: ${selectedMeta.ethnicity}<br>
         gender: ${selectedMeta.gender}<br>
@@ -119,24 +127,9 @@ d3.json(url).then(function(data) {
         location: ${selectedMeta.location}<br>
         bbtype: ${selectedMeta.bbtype}<br>
         wfreq: ${selectedMeta.wfreq}<br>`;
-        console.log('selectedMetaString', selectedMetaString);
 
         let metatext = d3.select(".panel-body").html(selectedMetaString);
-        console.log(metatext);
 
     };
 }); 
 
-// Use sample_values as the values for the bar chart.
-// Use otu_ids as the labels for the bar chart.
-// Use otu_labels as the hovertext for the chart.
-
-//Create a bubble chart that displays each sample.
-//Use otu_ids for the x values.
-//Use sample_values for the y values.
-//Use sample_values for the marker size.
-//Use otu_ids for the marker colors.
-//Use otu_labels for the text values.
-
-//how to display metadata
-//size of bubbles needs fixed
